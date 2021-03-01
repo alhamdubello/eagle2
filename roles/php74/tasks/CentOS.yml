@@ -1,0 +1,28 @@
+---
+- name: Ensuring EPEL repo
+  dnf:
+    name: epel-release.noarch
+    state: present
+
+- name: Install PHPFM repos
+  dnf:
+    name: "http://rpms.remirepo.net/enterprise/remi-release-8.rpm"
+    disable_gpg_check: True
+    state: present
+
+- name: Enable the PHPFM repos
+  dnf:
+    name: "@php:remi-7.4"
+    state: present
+
+- name: Installing PHP packages
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ centos_php74_pkgs }}"  
+
+- name: Starting the Php-fpm service
+  systemd:
+    name: php-fpm
+    state: started
+    enabled: yes

@@ -1,0 +1,23 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Nginx for Ubuntu
+  apt:
+    name: nginx
+    state: present
+
+- name: Enable and Start services for nginx ubuntu
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Enusre ufw is running
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ ubuntu_nginx_ports }}"
+

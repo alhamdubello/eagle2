@@ -1,0 +1,11 @@
+---
+# tasks file for Mariadb
+- name: Deploying Mariadb on CentOS boxes
+  include: CentOS.yml
+  when:
+    ansible_distribution == "CentOS"
+
+- name: Deploying Mariadb on Ubuntu boxes
+  include: Ubuntu.yml
+  when:
+    ansible_distribution == "Ubuntu"

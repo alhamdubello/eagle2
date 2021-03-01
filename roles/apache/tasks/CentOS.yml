@@ -1,0 +1,29 @@
+---
+- name: Ensuring EPEL repo
+  dnf:
+    name: epel-release.noarch
+    state: present
+
+- name: Installing HTTPD
+  dnf:
+    name: httpd
+
+- name: Enable and start HTTPD
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Enusre firewalld is running
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Enabling ports for HTTPD Serivces 
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{ centos_httpd_ports }}"

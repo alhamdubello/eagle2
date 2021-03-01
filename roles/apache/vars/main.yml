@@ -1,0 +1,10 @@
+---
+# vars file for apache
+centos_httpd_ports:
+  - 22/tcp
+  - 80/tcp
+  - 443/tcp
+ubuntu_apache2_ports:
+  - '22'
+  - '80'
+  - '443'

@@ -1,0 +1,109 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Purge all default MySql packages
+  apt:
+    pkg: '{{ item }}'
+    state: absent
+    purge: true
+  ignore_errors: true
+  loop:
+    - 'mysql*'
+    - 'mysql'
+
+- name: Installing  software-properties-common for Ubuntu 20.04
+  apt:
+    name: software-properties-common
+    state: present
+
+- name: Dependencies for Ubuntu 20.04 packages
+  apt:
+    pkg: "{{ item }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 86400
+    allow_unauthenticated: yes
+  loop: "{{ mariadb_apt_dependencies }}"
+
+- name: Install MySQL-python pip package
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ mariadb_pip_dependencies }}"
+  
+- name: Adding MariaDB Apt signing key
+  apt_key:
+    url: https://mariadb.org/mariadb_release_signing_key.asc
+    state: present
+
+- name: Adding MariaDB 10.5 repo
+  apt_repository:
+    repo: "deb [arch=amd64 trusted=yes] https://mirrors.ukfast.co.uk/sites/mariadb/repo/10.5/ubuntu groovy main"
+    filename: "mariadb"
+    state: present
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Installing MariaDB 10.5 Server for Ubuntu
+  apt:
+    name: 
+     - mariadb-server
+     - mariadb-client
+    state: present
+
+- name: Enable and Start services for mariadb ubuntu
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Enusre ufw is running and 3306 and 22 are open
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ ubuntu_mariadb_ports }}"
+
+- name: update mysql root password for all root accounts
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ ubuntu_root_db_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: copy .my.cnf file with root password credentials
+  template:
+    src: templates/root/ubuntu/.my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    mode: '0600'
+  tags: cnf
+
+- name: update mysql root password login for all root accounts
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ ubuntu_root_db_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+  tags: rootpassword
+
+- name: ensure anonymous users are not in the database
+  mysql_user:
+    name: ''
+    host_all: yes
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: absent
+
+- name: remove the test database
+  mysql_db:
+    name: test
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: absent

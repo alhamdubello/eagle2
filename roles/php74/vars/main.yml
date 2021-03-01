@@ -1,0 +1,22 @@
+---
+# vars file for php74
+ubuntu_php74_pkgs:
+  - php 
+  - php-cli 
+  - php-fpm 
+  - php-json 
+  - php-common 
+  - php-mysql 
+  - php-zip 
+  - php-gd 
+  - php-mbstring 
+  - php-curl 
+  - php-xml 
+  - php-pear 
+  - php-bcmath
+  - php-pdo
+centos_php74_pkgs:
+  - php
+  - php-fpm
+  - php-gd
+  - php-mysqlnd

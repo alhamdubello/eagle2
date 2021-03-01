@@ -1,0 +1,23 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Apache2 for Ubuntu
+  apt:
+    name: apache2
+    state: present
+
+- name: Enable and Start services for apache2 ubuntu
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: Enusre ufw is running
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ ubuntu_apache2_ports }}"
+

@@ -1,0 +1,11 @@
+---
+# tasks file for php74
+- name: Deploying php74 on CentOS boxes
+  include: CentOS.yml
+  when:
+    ansible_distribution == "CentOS"
+
+- name: Deploying php74 on Ubuntu boxes
+  include: Ubuntu.yml
+  when:
+    ansible_distribution == "Ubuntu"

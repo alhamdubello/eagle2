@@ -1,0 +1,8 @@
+[master]
+acs
+[centos]
+node01
+[ubuntu]
+node02
+[stockcheck]
+ubusrv

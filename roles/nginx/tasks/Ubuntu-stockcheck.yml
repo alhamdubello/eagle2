@@ -1,0 +1,55 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Nginx for Ubuntu stockcheck
+  apt:
+    name: nginx
+    state: present
+
+- name: Enable and Start services for nginx ubuntu stockcheck
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Enusre ufw is running for stockcheck
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ ubuntu_nginx_ports }}"
+
+- name: Setting up stockcheck Nginx configurations file
+  template:
+    src: templates/stockcheck/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    
+- name: Ensuring the stockcheck web directory is created
+  file:
+    path: /var/www/stockecheck/html
+    state: directory
+    mode: '0755'
+
+- name: Enabling Stockcheck application
+  template:
+    src: templates/stockcheck/www.stockcheck.com.j2
+    dest: /etc/nginx/sites-available/www.stockcheck.com
+
+- name: Setting up SSL for stockcheck app
+  include: stockcheck-ssl.yml
+
+- name: Unlink default nginx page for stockcheck to be enabled
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Creating symbolic link for stockcheck sites-enabled
+  file:
+    src: /etc/nginx/sites-available/www.stockcheck.com
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    state: link
+  notify: restart nginx

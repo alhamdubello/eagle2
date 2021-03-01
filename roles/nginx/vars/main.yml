@@ -1,0 +1,11 @@
+---
+# vars file for nginx
+ansible_python_interpreter: /usr/bin/python3
+centos_nginx_ports: 
+  - 22/tcp
+  - 80/tcp
+  - 443/tcp
+ubuntu_nginx_ports:
+  - '80'
+  - '443'
+  - '22'

@@ -1,0 +1,15 @@
+---
+# tasks file for nginx
+- name: Deploying Nginx on CentOS boxes
+  include: CentOS.yml
+  when:
+    ansible_distribution == "CentOS"
+
+- name: Deploying Nginx on Ubuntu boxes
+  include: Ubuntu-stockcheck.yml
+  when: "'stockcheck' in group_names"
+
+- name: Deploying Nginx on Ubuntu boxes
+  include: Ubuntu.yml
+  when:
+    ansible_distribution == "Ubuntu"

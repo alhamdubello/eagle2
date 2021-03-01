@@ -1,0 +1,10 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Apache2 for Ubuntu
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ ubuntu_php74_pkgs }}"
