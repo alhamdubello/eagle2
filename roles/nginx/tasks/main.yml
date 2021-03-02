@@ -5,6 +5,14 @@
   when:
     ansible_distribution == "CentOS"
 
+- name: Deploying Nginx on greeneagledev
+  include: Ubuntu-greeneagledev.yml
+  when: "'greeneagledev' in group_names"
+
+- name: Deploying Nginx on greeneagledev
+  include: Ubuntu-shoplauncherdev.yml
+  when: "'shoplauncherdev' in group_names"
+
 - name: Deploying Nginx on Ubuntu boxes
   include: Ubuntu-stockcheck.yml
   when: "'stockcheck' in group_names"

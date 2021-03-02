@@ -1,0 +1,11 @@
+---
+- name: Creating Self Signed SSL certificate config
+  template:
+    src: templates/stockcheck/self-signed.conf.j2
+    dest: /etc/nginx/snippets/self-signed.conf
+
+
+- name: Creating SSL PARAMS strong encryption config
+  template:
+    src: templates/stockcheck/ssl-params.conf.j2
+    dest: /etc/nginx/snippets/ssl-params.conf

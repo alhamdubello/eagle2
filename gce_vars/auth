@@ -1,0 +1,6 @@
+---
+gcp_project: stockcheck-database-production
+gcp_cred_kind: serviceaccount
+gcp_cred_file: /data/sysadmin/keys/stockcheck-database-production-e99c2dae65a4.json
+ssh_user: chudieagle
+ssh_key: /home/chudieagle/.ssh/id_chudieagle_rsa.pub

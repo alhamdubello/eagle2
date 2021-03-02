@@ -1,0 +1,39 @@
+---
+# tasks file for users
+- name: Ensure these groups are present.
+  group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid }}"
+    state: present
+  with_items:
+    - "{{ groups_var }}"
+
+- name: Ensure the list of users are present
+  user:
+    name: "{{ item.name }}"
+    groups: "{{ item.group }}"
+    state: present
+    append: yes
+  with_items:
+    - "{{ users_var }}"
+
+- name: copying keys for manyondoma
+  authorized_key:
+    user: mndoma
+    key: "{{ lookup('file', '/data/keys/id_mndoma.pub') }}"
+
+- name: copying keys for chukwudi
+  authorized_key:
+    user: chukwudi
+    key: "{{ lookup('file', '/data/keys/id_chukwudi.pub') }}"
+    state: present
+
+- name: adding sudoers for webadmin
+  template:
+    src: templates/webadmin_sudoers.j2
+    dest: /etc/sudoers.d/webadmin_sudoers
+
+- name: adding sudoers for webadmin
+  template:
+    src: templates/sysadmin_sudoers.j2
+    dest: /etc/sudoers.d/sysadmin_sudoers

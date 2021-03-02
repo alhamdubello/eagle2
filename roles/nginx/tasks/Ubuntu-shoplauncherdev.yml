@@ -1,0 +1,55 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Nginx for Ubuntu shoplauncherdev
+  apt:
+    name: nginx
+    state: present
+
+- name: Enable and Start services for nginx ubuntu shoplauncherdev
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Enusre ufw is running for shoplauncherdev
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ ubuntu_nginx_ports }}"
+
+- name: Setting up shoplauncherdev Nginx configurations file
+  template:
+    src: templates/shoplauncherdev/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    
+- name: Ensuring the shoplauncherdev web directory is created
+  file:
+    path: /var/www/shoplauncherdev/html
+    state: directory
+    mode: '0755'
+
+- name: Enabling Stockcheck application
+  template:
+    src: templates/shoplauncherdev/www.shoplauncherdev.com.j2
+    dest: /etc/nginx/sites-available/www.shoplauncherdev.com
+
+- name: Setting up SSL for shoplauncherdev app
+  include: shoplauncherdev-ssl.yml
+
+- name: Unlink default nginx page for shoplauncherdev to be enabled
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Creating symbolic link for shoplauncherdev sites-enabled
+  file:
+    src: /etc/nginx/sites-available/www.shoplauncherdev.com
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    state: link
+  notify: restart nginx

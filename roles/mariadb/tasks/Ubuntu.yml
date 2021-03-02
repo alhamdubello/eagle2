@@ -88,11 +88,14 @@
     name: root
     host: "{{ item }}"
     password: "{{ ubuntu_root_db_password }}"
+    login_user: root
+    login_password: "{{ ubuntu_root_db_password }}"
     login_unix_socket: /var/run/mysqld/mysqld.sock
   with_items:
     - "{{ ansible_hostname }}"
     - 127.0.0.1
     - ::1
+  ignore_errors: yes
   tags: rootpassword
 
 - name: ensure anonymous users are not in the database

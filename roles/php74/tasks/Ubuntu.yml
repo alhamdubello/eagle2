@@ -3,8 +3,19 @@
   apt:
     update_cache: yes
 
-- name: Install Apache2 for Ubuntu
+- name: Install php74 for Ubuntu
   apt:
     name: "{{ item }}"
     state: present
   loop: "{{ ubuntu_php74_pkgs }}"
+
+- name: stopping apache 2 services
+  service:
+    name: apache2
+    state: stopped 
+    enabled: no
+
+- name: uninstalling apache2
+  apt:
+    name: apache2
+    state: absent

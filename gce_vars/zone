@@ -1,0 +1,26 @@
+---
+#Variables for us-central1
+zone:
+ za: us-central1-a
+ zb: us-central1-b
+ zc: us-central1-c
+
+region: us-central1
+
+name_zonea: stockcheck01
+name_zoneb: stockcheck02
+name_zonec: stockcheck03
+
+ge_zonea: greeneagle01
+ge_zoneb: greeneagle02
+ge_zonec: greeneagle03
+
+es_zonea: elastics01
+es_zoneb: elastics02
+es_zonec: elastics03
+
+sl_zonea: shoplauncher01
+sl_zoneb: shoplauncher02
+sl_zonec: shoplauncher03
+
+sl_dev_zonea: shoplauncherdev01

@@ -1,0 +1,55 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Nginx for Ubuntu greeneagledev
+  apt:
+    name: nginx
+    state: present
+
+- name: Enable and Start services for nginx ubuntu greeneagledev
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Enusre ufw is running for greeneagledev
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ ubuntu_nginx_ports }}"
+
+- name: Setting up greeneagledev Nginx configurations file
+  template:
+    src: templates/greeneagledev/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    
+- name: Ensuring the greeneagledev web directory is created
+  file:
+    path: /var/www/greeneagledev/html
+    state: directory
+    mode: '0755'
+
+- name: Enabling Stockcheck application
+  template:
+    src: templates/greeneagledev/www.greeneagledev.com.j2
+    dest: /etc/nginx/sites-available/www.greeneagledev.com
+
+- name: Setting up SSL for greeneagledev app
+  include: greeneagledev-ssl.yml
+
+- name: Unlink default nginx page for greeneagledev to be enabled
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Creating symbolic link for greeneagledev sites-enabled
+  file:
+    src: /etc/nginx/sites-available/www.greeneagledev.com
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    state: link
+  notify: restart nginx

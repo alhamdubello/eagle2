@@ -1,0 +1,38 @@
+---
+# vars file for users
+groups_var:
+  - name: sysadmin
+    gid: 1801
+  - name: webadmin
+    gid: 1802
+  - name: dbadmin
+    gid: 1803
+
+users_var:
+  - name: belloau
+    group:
+      - sysadmin
+      - webadmin
+      - dbadmin
+  - name: chudieagle
+    group:
+      - sysadmin
+      - webadmin
+      - dbadmin
+  - name: mndoma
+    group:
+      - webadmin
+  - name: chukwudi
+    group:
+      - sysadmin
+      - webadmin
+      - dbadmin
+  - name: kingsley
+    group: 
+      - webadmin
+  - name: liberty 
+    group: 
+      - webadmin
+  - name: tony
+    group: 
+      - webadmin
