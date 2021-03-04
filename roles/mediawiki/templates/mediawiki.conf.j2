@@ -1,0 +1,13 @@
+<VirtualHost *:80>
+    ServerName wiki.greeneagle.com
+    ServerAlias wiki.greeneagle.com
+    DocumentRoot "/var/www/mediawiki/"
+    <Directory /var/www/mediawiki/>
+        DirectoryIndex index.html index.html.var index.php
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+    </Directory>
+
+    ErrorLog /var/log/httpd/mediawiki/error.log
+    CustomLog /var/log/httpd/mediawiki/requests.log combined
+</VirtualHost>

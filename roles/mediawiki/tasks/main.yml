@@ -1,0 +1,42 @@
+---
+# tasks file for mediawiki
+#Media Wiki Database and User configurations
+- name: mediawiki database creation.
+  mysql_db:
+    name: mediawiki
+    collation: utf8_bin
+    encoding: utf8
+    state: present
+
+- name: add mediawiki dbuser
+  mysql_user:
+    name: wikiadmin
+    password: "{{ wiki_dbpass }}"
+    priv: 'mediawiki.*:ALL'
+    host: localhost
+    state: present
+
+- name: Download and Untar the installation files
+  unarchive:
+    src: https://releases.wikimedia.org/mediawiki/1.35/mediawiki-1.35.1.tar.gz
+    dest: /var/www
+    remote_src: yes
+
+- name: creating a media wiki web directory
+  file:
+    src: /var/www/mediawiki-1.35.1
+    dest: /var/www/mediawiki
+    owner: apache
+    group: apache
+    state: link
+
+- name: creating a mediawiki Logs web directory
+  file:
+    path: /var/log/httpd/mediawiki
+    state: directory
+
+- name: creating httpd configuration file for mediawiki
+  template:
+    src: templates/mediawiki.conf.j2
+    dest: /etc/httpd/conf.d/mediawiki.conf
+  notify: restart httpd

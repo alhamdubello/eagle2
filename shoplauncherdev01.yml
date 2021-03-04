@@ -40,6 +40,9 @@
               - '22'
               - '80'
               - '443'
+              - '3308'
+              - '3307'
+              - '8000'
         target_tags:
           - shoplauncherdev
         source_tags:
