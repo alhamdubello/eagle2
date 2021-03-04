@@ -28,6 +28,12 @@
     key: "{{ lookup('file', '/data/keys/id_chukwudi.pub') }}"
     state: present
 
+- name: copying keys for liberty
+  authorized_key:
+    user: liberty
+    key: "{{ lookup('file', '/data/keys/id_liberty.pub') }}"
+    state: present
+
 - name: adding sudoers for webadmin
   template:
     src: templates/webadmin_sudoers.j2

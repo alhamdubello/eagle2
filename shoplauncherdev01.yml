@@ -120,7 +120,7 @@
     - php74
     - nginx
     - users
-    - mariadb
+      #- mariadb
   gather_facts: True
   become: true
   vars:
