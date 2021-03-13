@@ -12,3 +12,8 @@ ubuntu_nginx_ports:
   - '3308'
   - '3307'
   - '8000'
+kibana_nginx_ports:
+  - 22/tcp
+  - 5601/tcp
+  - 5600/tcp
+  - 443/tcp

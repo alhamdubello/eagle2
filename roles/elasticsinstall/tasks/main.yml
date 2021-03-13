@@ -60,6 +60,11 @@
     state: directory
     mode: '0755'
 
+- name: Updating configs for kibana
+  template:
+    src: templates/kibana.config.j2
+    dest:  /etc/kibana/kibana.yml
+
 - name: Just force systemd to reread configs
   systemd:
     daemon_reload: yes
@@ -69,6 +74,19 @@
     name: kibana
     state: started
     enabled: yes
+
+- name: Updating configs for kibana
+  template:
+    src: templates/kibana.config.j2
+    dest:  /etc/kibana/kibana.yml
+  notify: restart kibana
+
+- name: Opening Ports 5600 - 5601 for kibana.
+  firewalld:
+    port: 5600-5601/tcp
+    permanent: yes
+    state: enabled
+    immediate: true
 
 - name: Opening Ports 9200 - 9400 for Elasticsearch.
   firewalld:

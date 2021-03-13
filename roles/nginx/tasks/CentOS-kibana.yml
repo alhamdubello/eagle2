@@ -1,0 +1,38 @@
+---
+- name: Ensuring EPEL repo
+  dnf:
+    name: epel-release.noarch
+    state: present
+
+- name: Installing Nginx
+  dnf:
+    name: 
+      - nginx
+      - httpd-tools
+    state: present
+
+- name: Enable and start Nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Enusre firewalld is running
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Enabling ports for Nginx Serivces 
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{ kibana_nginx_ports }}"
+
+- name: Setting up kibana Nginx configurations file
+  template:
+    src: templates/kibana/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx

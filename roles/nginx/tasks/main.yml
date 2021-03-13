@@ -1,5 +1,9 @@
 ---
 # tasks file for nginx
+- name: Deploying Nginx on kibana
+  include: CentOS-kibana.yml
+  when: "'kibana' in group_names"
+
 - name: Deploying Nginx on CentOS boxes
   include: CentOS.yml
   when:

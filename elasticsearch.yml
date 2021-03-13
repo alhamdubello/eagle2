@@ -72,6 +72,7 @@
         target_tags:
           - elasticsearch
         source_tags:
+          - kibana
           - management
           - elasticsearch
           - greeneagle
