@@ -1,5 +1,11 @@
 ---
 # tasks file for users
+- name: install tools
+  dnf:
+    name: "{{ item }}"
+    state: present
+  with_item:
+    - "{{ tools }}"
 - name: Ensure these groups are present.
   group:
     name: "{{ item.name }}"

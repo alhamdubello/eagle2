@@ -1,5 +1,8 @@
 ---
 # vars file for users
+tools:
+  - git
+  - rsync
 groups_var:
   - name: sysadmin
     gid: 1801

@@ -1,5 +1,9 @@
 ---
 # tasks file for Apache
+- name: Deploying apache for stockcheck
+  include: stockcheck.yml
+  when: "'stockcheck' in group_names"
+
 - name: Deploying Apache on CentOS boxes
   include: CentOS.yml
   when:
