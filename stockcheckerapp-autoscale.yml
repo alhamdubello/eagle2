@@ -173,7 +173,6 @@
         name: "stockcheck-auto-frule"
         ip_address: "{{ stockcheck_globaladdress.address }}"
         load_balancing_scheme: "EXTERNAL"
-        ip_protocol: TCP
         port_range: 80-80
         target: "{{ stockcheck_prod_http_proxy.selfLink }}"
         project: "{{ gcp_project }}"
