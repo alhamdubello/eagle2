@@ -1,0 +1,43 @@
+PUT /stockcheck_feedback
+{
+    "mappings" : {
+        "properties" : {
+          "id" : {
+            "type" : "integer"
+          },	
+          "suggestions" : {
+            "type" : "text"
+          },
+          "reason_for_visit" : {
+            "type" : "text"
+          },
+          "goal_status" : {
+            "type" : "text"
+          },
+          "reason_for_leaving" : {
+            "type" : "text"
+          },
+          "date_created" : {
+            "type" : "date",
+            "format" : "yyyy-MM-dd HH:mm:ss"
+          },
+          "url" : {
+            "type" : "text"
+          },
+          "reason_for_visit_other" : {
+            "type" : "text"
+          },
+          "reason_for_leaving_other" : {
+            "type" : "text"
+          },
+          "suggest" : {
+            "type" : "completion",
+            "analyzer" : "simple",
+            "preserve_separators" : true,
+            "preserve_position_increments" : true,
+            "max_input_length" : 50
+          } 
+        }
+      }
+    
+}

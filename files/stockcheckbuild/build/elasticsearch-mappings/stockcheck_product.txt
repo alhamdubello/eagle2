@@ -1,0 +1,279 @@
+PUT /stockcheck_product_v2
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "bigram_combiner": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "custom_shingle",
+            "my_char_filter"
+          ]
+        }
+      },
+      "filter": {
+        "custom_shingle": {
+          "type": "shingle",
+          "min_shingle_size": 2,
+          "max_shingle_size": 3,
+          "output_unigrams": true
+        },
+        "my_char_filter": {
+          "type": "pattern_replace",
+          "pattern": " ",
+          "replacement": ""
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "part_number": {
+        "type": "text",
+        "analyzer": "bigram_combiner"
+      },
+      "suggest": {
+        "type": "completion"
+      },
+      "type_id": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "title": {
+        "type": "text"
+      },
+      "product_manufacturing_status_note": {
+        "type": "text"
+      },
+      "product_manufacturing_status": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "slug": {
+        "type": "text"
+      },
+      "is_e_media": {
+        "type": "integer"
+      },
+      "optimized": {
+        "type": "integer"
+      },
+      "approval_status_id": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "date_created": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss"
+      },
+      "created_by": {
+        "type": "text"
+      },
+      "pricing_uom_attribute_m": {
+        "type": "text"
+      },
+      "mask_m": {
+        "type": "text"
+      },
+      "additional_reference_m": {
+        "type": "nested",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "keyword"
+          },
+          "value": {
+            "type": "keyword",
+            "copy_to": "additional_reference_m_name"
+          }
+        }
+      },
+      "details_m": {
+        "type": "nested",
+        "properties": {
+          "label": {
+            "type": "keyword"
+          },
+          "value": {
+            "type": "text",
+            "copy_to": "details_m_details"
+          }
+        }
+      },
+      "price_m": {
+        "type": "nested",
+        "properties": {
+          "label": {
+            "type": "keyword"
+          },
+          "value": {
+            "type": "double",
+            "copy_to": "price_m_prices"
+          }
+        }
+      },
+      "revision_history_m": {
+        "type": "nested",
+        "properties": {
+          "label": {
+            "type": "keyword"
+          },
+          "value": {
+            "type": "keyword",
+            "copy_to": "revision_history_m_rh"
+          }
+        }
+      },
+      "categories": {
+        "type": "nested",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "text",
+            "copy_to": "categories_names"
+          }
+        }
+      },
+      "manufacturers": {
+        "type": "nested",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "text",
+            "copy_to": "manufacturers_names"
+          }
+        }
+      },
+      "industries": {
+        "type": "nested",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "text",
+            "copy_to": "industries_names"
+          }
+        }
+      },
+      "relationships": {
+        "type": "nested",
+        "properties": {
+          "relationship_type_name": {
+            "type": "keyword",
+            "copy_to": "relationships_type_names"
+          },
+          "model_classname": {
+            "type": "keyword"
+          },
+          "model": {
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "copy_to": "relationships_models"
+              }
+            }
+          }
+        }
+      },
+      "ads": {
+        "type": "nested",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "text",
+            "copy_to": "ads_names"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "double"
+          },
+          "approval_status_id": {
+            "type": "keyword"
+          },
+          "type_id": {
+            "type": "keyword"
+          },
+          "date_created": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss"
+          },
+          "created_by": {
+            "type": "text"
+          },
+          "condition": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "copy_to": "ads_conditions"
+              }
+            }
+          },
+          "location": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "copy_to": "ads_locations"
+              }
+            }
+          },
+          "where_to_buy_sell": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "copy_to": "ads_where_to_buy_sell_names"
+              },
+              "rating": {
+                "type": "double"
+              },
+              "is_trusterd": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

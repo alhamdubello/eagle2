@@ -1,0 +1,140 @@
+PUT /stockcheck_quote
+{
+    "mappings" : {
+        "properties" : {
+          "id" : {
+            "type" : "integer"
+          },	
+          "number" : {
+            "type" : "text"
+          },
+          "first_name" : {
+            "type" : "text"
+          },
+          "last_name" : {
+            "type" : "text"
+          },
+          "phone" : {
+            "type" : "text"
+          },
+          "email" : {
+            "type" : "text"
+          },
+          "company" : {
+            "type" : "text"
+          },
+          "items" : {
+            "type" : "nested",
+            "properties" : {
+              "id" : {
+                "type" : "integer"
+              },
+              "part_number" : {
+                "type" : "text",
+                "copy_to" : [
+                  "quote_items_part_number_names"
+                ]
+              },
+              "type_name" : {
+                "type" : "text"
+              },
+              "quantity" : {
+                "type" : "integer"
+              },
+              "comment" : {
+                "type" : "text"
+              },
+              "condition" : {
+                "type" : "object",
+                "properties" : {
+                  "id" : {
+                    "type" : "integer"
+                  },
+                  "name" : {
+                    "type" : "text",
+                    "copy_to" : [
+                      "quote_items_conditions_name"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "enterprise_role" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "integer"
+              },
+              "name" : {
+                "type" : "text",
+                "copy_to" : [
+                  "enterprise_role_name"
+                ]
+              }
+            }
+          },
+          "response_time" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "integer"
+              },
+              "name" : {
+                "type" : "text",
+                "copy_to" : [
+                  "response_time_name"
+                ]
+              }
+            }
+          },
+          "purpose" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "integer"
+              },
+              "name" : {
+                "type" : "text",
+                "copy_to" : [
+                  "purpose_name"
+                ]
+              }
+            }
+          },
+          "comment" : {
+            "type" : "text"
+          },
+          "address_line_1" : {
+            "type" : "text"
+          },
+          "address_line_2" : {
+            "type" : "text"
+          },
+          "city" : {
+            "type" : "text"
+          },
+          "state_prov" : {
+            "type" : "text"
+          },
+          "zip_postal_code" : {
+            "type" : "text"
+          },
+          "country" : {
+            "type" : "text"
+          },
+          "date_created" : {
+            "type" : "date",
+            "format" : "yyyy-MM-dd HH:mm:ss"
+          },
+          "suggest" : {
+            "type" : "completion",
+            "analyzer" : "simple",
+            "preserve_separators" : true,
+            "preserve_position_increments" : true,
+            "max_input_length" : 50
+          } 
+        }
+      }
+    
+}

@@ -1,0 +1,95 @@
+version: '3.7'
+
+volumes:
+  stockcheck-db-data:
+  data_elastic_1:
+    driver: local
+  data_elastic_2:
+    driver: local
+  data_elastic_3:
+    driver: local
+      
+networks:
+  elastic:
+    driver: bridge
+
+services:
+  web:
+    build: ../../Dockerfile ../../
+    container_name: stockcheck-web
+    volumes:
+      - ./:/var/www/html/
+    environment:
+      # Make sure to tweak this in production
+      PHP_FPM_MAX_CHILDREN: 5
+      # Enable periodic jobs (see config/crontabs)
+      #ENABLE_CROND: 1
+    ports:
+      - $WEB_PORT:80
+
+  stockcheck_elastic_1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    restart: always
+    container_name: stockcheck_elastic_1
+    environment:
+      - node.name=stockcheck_elastic_1
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=stockcheck_elastic_2,stockcheck_elastic_3
+      - cluster.initial_master_nodes=stockcheck_elastic_1,stockcheck_elastic_2,stockcheck_elastic_3
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data_elastic_1:/usr/share/elasticsearch/data
+    ports:
+      - $ES_PORT:9200
+    networks:
+      - elastic
+    
+  stockcheck_elastic_2:
+    image:  docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    restart: always
+    container_name: stockcheck_elastic_2
+    environment:
+      - node.name=stockcheck_elastic_2
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=stockcheck_elastic_1,stockcheck_elastic_3
+      - cluster.initial_master_nodes=stockcheck_elastic_1,stockcheck_elastic_2,stockcheck_elastic_3
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data_elastic_2:/usr/share/elasticsearch/data
+    ports:
+      - $ES_PORT:9200
+    networks:
+      - elastic
+
+  stockcheck_elastic_3:
+    image:  docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    restart: always
+    container_name: stockcheck_elastic_3
+    environment:
+      - node.name=stockcheck_elastic_3
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=stockcheck_elastic_1,stockcheck_elastic_2
+      - cluster.initial_master_nodes=stockcheck_elastic_1,stockcheck_elastic_2,stockcheck_elastic_3
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data_elastic_3:/usr/share/elasticsearch/data
+    ports:
+      - $ES_PORT:9200
+    networks:
+      - elastic
+

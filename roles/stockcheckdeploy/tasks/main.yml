@@ -1,0 +1,47 @@
+---
+# tasks file for stockcheckdeploy
+#
+- name: install semanage for centos8
+  dnf:
+    name: policycoreutils-python-utils-2.9-9.el8.noarch
+    state: present
+
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+- name: Set httpd_can_network_connect_db flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect_db
+    state: yes
+    persistent: yes
+
+- name: installing certbot
+  dnf:
+    name:
+      - certbot
+      - python3-certbot-apache
+    state: present
+
+- name: Installing supervisor
+  dnf:
+    name: supervisor
+    state: present
+
+- name: copying supervisor config files
+  copy:
+    src: files/stockcheckbuild/build/supervisor-conf/
+    dest: /etc/supervisord.d/
+
+- name: starting the services for supervisor
+  systemd:
+    name: supervisord
+    state: started
+    enabled: yes
+
+    #- name: checkout the git repo for stockcheck
+    #  ansible.builtin.git:
+    #    repo: git@github.com:vox-technologies/stockcheck.git
+    #    dest: /usr/local/stockcheck

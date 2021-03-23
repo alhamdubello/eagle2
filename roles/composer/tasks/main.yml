@@ -1,0 +1,11 @@
+---
+# tasks file for compose
+#
+- name: Download Compose file
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /root/composer-setup.php
+    mode: '0640'
+
+- name: ensure php composer installed
+  shell: php /root/composer-setup.php --install-dir=/usr/local/bin --filename=composer

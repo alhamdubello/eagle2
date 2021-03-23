@@ -1,0 +1,284 @@
+PUT /stockcheck_ad
+{
+  "mappings": {
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "text",
+          "fields": {
+            "raw": {
+              "type": "keyword"
+            }
+          }
+        },
+        "suggest": {
+          "type": "completion",
+          "analyzer": "simple",
+          "preserve_separators": true,
+          "preserve_position_increments": true,
+          "max_input_length": 50
+        },
+        "slug": {
+          "type": "text"
+        },
+        "description": {
+          "type": "text"
+        },
+        "approval_status_id": {
+          "type": "text",
+          "fields": {
+            "raw": {
+              "type": "keyword"
+            }
+          }
+        },
+        "created_by": {
+          "type": "text",
+          "fields": {
+            "raw": {
+              "type": "keyword"
+            }
+          }
+        },
+        "date_created": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        },
+        "ad_type": {
+          "type": "keyword"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "double"
+        },
+        "expiry_date": {
+          "type": "date",
+          "format": "yyyy-MM-dd"
+        },
+        "views": {
+          "type": "integer"
+        },
+        "condition": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "text",
+              "copy_to": [
+                "condition_names"
+              ]
+            }
+          }
+        },
+        "condition_names": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "text",
+              "copy_to": [
+                "location_names"
+              ]
+            }
+          }
+        },
+        "location_names": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "buyer_seller": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "is_trusterd": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "text",
+              "copy_to": [
+                "buyer_seller_names"
+              ]
+            },
+            "slug": {
+              "type": "text"
+            },
+            "rating": {
+              "type": "double"
+            },
+            "role": {
+              "type": "text"
+            }
+          }
+        },
+        "buyer_seller_names": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "display_images": {
+          "type": "nested",
+          "properties": {
+            "id": {
+              "type": "long"
+            },
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "url": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "files": {
+          "type": "nested",
+          "properties": {
+            "id": {
+              "type": "long"
+            },
+            "name": {
+              "type": "text",
+              "copy_to": [
+                "file_names"
+              ]
+            },
+            "url": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "file_names": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "categories": {
+          "type": "nested",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "text",
+              "copy_to": [
+                "categories_names"
+              ]
+            },
+            "slug": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "categories_names": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "manufacturers": {
+          "type": "nested",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "text",
+              "copy_to": [
+                "manufacturers_names"
+              ]
+            },
+            "slug": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "manufacturers_names": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "product": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "part_number": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  
+}

@@ -189,6 +189,9 @@
     - users
     - apache
     - php74
+    - mariadb
+    - composer
+    - stockcheckdeploy
   vars:
     ansible_user: chudieagle
     ansible_ssh_private_key_file: /home/chudieagle/.ssh/id_chudieagle_rsa

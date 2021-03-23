@@ -1,0 +1,50 @@
+PUT /stockcheck_category
+{
+	"mappings": {
+			"properties": {
+				"id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "text"
+				},
+				"description": {
+					"type": "text"
+				},
+				"slug": {
+					"type": "text"
+				},
+				"parent": {
+					"type": "nested",
+					"properties": {
+						"id": {
+							"type": "integer"
+						},
+						"name": {
+							"type": "text"
+						}
+					}
+				},
+				"alias_root": {
+					"type": "nested",
+					"properties": {
+						"id": {
+							"type": "integer"
+						},
+						"name": {
+							"type": "text"
+						}
+					}
+				},
+				"approval_status": {
+					"type": "text"
+				},
+				"date_created": {
+					"type": "text"
+				},
+				"created_by": {
+					"type": "text"
+				}
+			}
+		}
+}

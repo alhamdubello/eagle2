@@ -1,0 +1,111 @@
+PUT /stockcheck_blog_article
+{
+    "mappings" : {
+        "properties" : {
+          "id" : {
+            "type" : "integer"
+          },		  
+          "title" : {
+            "type" : "text",
+            "fields" : {
+              "raw" : {
+                "type" : "keyword"
+              }
+            }
+          },
+          "content" : {
+            "type" : "text"
+          },
+          "seo_description" : {
+            "type" : "text"
+          },
+          "seo_metatags" : {
+            "type" : "text"
+          },
+          "is_published" : {
+            "type" : "integer"
+          },
+          "created_by" : {
+            "type" : "text"
+          },
+          "date_created" : {
+            "type" : "date",
+            "format" : "yyyy-MM-dd HH:mm:ss"
+          },
+          "slug" : {
+            "type" : "text"
+          },
+          "suggest" : {
+            "type" : "completion",
+            "analyzer" : "simple",
+            "preserve_separators" : true,
+            "preserve_position_increments" : true,
+            "max_input_length" : 50
+          },
+          "featured_image" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "integer"
+              },
+              "name" : {
+                "type" : "text",
+                "copy_to" : [
+                  "file_names"
+                ]
+              },
+              "url" : {
+                "type" : "text"
+              }
+            }
+          },         
+          "categories": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "copy_to": [
+                  "categories_names"
+                ]
+              }
+            }
+          },
+          "categories_names": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },  
+          "hashtags": {
+            "type": "nested",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "text",
+                "copy_to": [
+                  "hashtags_names"
+                ]
+              }
+            }
+          },
+          "hashtags_names": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          }    
+        }
+      }
+    
+}

@@ -3,6 +3,8 @@
 tools:
   - git
   - rsync
+  - tmux
+  - supervisor
 groups_var:
   - name: sysadmin
     gid: 1801

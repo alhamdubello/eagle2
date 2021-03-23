@@ -1,0 +1,210 @@
+PUT /stockcheck_enterprise
+{
+    "mappings" : {
+			"properties" : {
+				"id" : {
+					"type" : "integer"
+				},		  
+				"name" : {
+					"type" : "text",
+					"fields" : {
+						"raw" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"description" : {
+					"type" : "text"
+				},
+				"website" : {
+					"type" : "text"
+				},
+				"addresses" : {
+					"type" : "nested",
+					"properties" : {
+						"id" : {
+							"type" : "integer"
+						},
+						"address" : {
+							"type" : "text"
+						}
+					}
+				},
+				"sector" : {
+					"type" : "text"
+				},
+				"year_founded" : {
+					"type" : "integer"
+				},
+				"approval_status_id" : {
+					"type" : "text",
+					"fields" : {
+						"raw" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"created_by" : {
+					"type" : "text"
+				},
+				"date_created" : {
+					"type" : "date",
+					"format" : "yyyy-MM-dd HH:mm:ss"
+				},
+				"slug" : {
+					"type" : "text"
+				},
+				"suggest" : {
+					"type" : "completion",
+					"analyzer" : "simple",
+					"preserve_separators" : true,
+					"preserve_position_increments" : true,
+					"max_input_length" : 50
+				},
+				"display_images" : {
+					"type" : "nested",
+					"properties" : {
+						"id" : {
+							"type" : "integer"
+						},
+						"name" : {
+							"type" : "text",
+							"copy_to" : [
+								"file_names"
+							]
+						},
+						"url" : {
+							"type" : "text"
+						}
+					}
+				},
+				"files" : {
+					"type" : "nested",
+					"properties" : {
+						"id" : {
+							"type" : "integer"
+						},
+						"name" : {
+							"type" : "text",
+							"copy_to" : [
+								"file_names"
+							]
+						},
+						"url" : {
+							"type" : "text"
+						}
+					}
+				},
+				"file_names" : {
+					"type" : "text",
+					"fields" : {
+						"keyword" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"products" : {
+					"type" : "nested",
+					"properties" : {
+						"id" : {
+							"type" : "integer"
+						},
+						"part_number" : {
+							"type" : "text",
+							"copy_to" : [
+								"product_names"
+							]
+						}
+					}
+				},
+				"product_names" : {
+					"type" : "text",
+					"fields" : {
+						"keyword" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"ads" : {
+					"type" : "nested",
+					"properties" : {
+						"id" : {
+							"type" : "integer"
+						},
+						"name" : {
+							"type" : "text",
+							"copy_to" : [
+								"ads_names"
+							]
+						}
+					}
+				},
+				"ads_names" : {
+					"type" : "text",
+					"fields" : {
+						"keyword" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"relationships" : {
+					"type" : "nested",
+					"properties" : {
+						"id" : {
+							"type" : "integer"
+						},	
+						"relationship_type_name" : {
+							"type" : "keyword",
+							"copy_to" : [
+								"relationship_type_names"
+							]
+						},		  
+						"relationship_model_classname" : {
+							"type" : "keyword",
+							"copy_to" : [
+								"relationship_model_classnames"
+							]
+						},			  
+						"relationship_model" : {
+							"type" : "nested",
+							"properties" : {
+								"id" : {
+									"type" : "integer"
+								},	
+								"name" : {
+									"type" : "text",
+									"copy_to" : [
+										"relationship_model_names"
+									]
+								}
+							}
+						}
+					}
+				},
+				"relationship_model_classnames" : {
+					"type" : "text",
+					"fields" : {
+						"keyword" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"relationship_model_names" : {
+					"type" : "text",
+					"fields" : {
+						"keyword" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"relationship_type_names" : {
+					"type" : "text",
+					"fields" : {
+						"keyword" : {
+							"type" : "keyword"
+						}
+					}
+				}
+			}
+		}
+}

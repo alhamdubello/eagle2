@@ -1,0 +1,241 @@
+---
+- name: Play for stockchecker instance templates
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - gce_vars/auth
+    - gce_vars/machines
+    - gce_vars/zone
+  tasks:
+    - name: create a VPC stockcheck network
+      google.cloud.gcp_compute_network:
+        name: stockchecker-subnetwork
+        auto_create_subnetworks: 'true'
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: network
+
+    - name: create a firewall rules for stockcheck app
+      google.cloud.gcp_compute_firewall:
+        name: stockcheckapp-fw-ports
+        network: "{{ network }}"
+        allowed:
+          - ip_protocol: icmp
+          - ip_protocol: tcp
+            ports:
+              - '22'
+              - '80'
+              - '443'
+        target_tags:
+          - stockcheck
+        source_tags:
+          - management
+          - greeneagle
+          - greeneagledev
+          - redis
+          - elasticsearch
+          - kibana
+          - shoplauncher
+          - shoplauncherdev
+        source_ranges:
+          - '130.211.0.0/22'
+          - '35.191.0.0/16'
+          - '209.85.152.0/22'
+          - '209.85.204.0/22'
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: firewall
+
+    - name: creating instance template for stockchecker
+      google.cloud.gcp_compute_instance_template:
+        name: stockcheck-template
+        properties:
+          disks:
+          - auto_delete: 'true'
+            boot: 'true'
+            initialize_params:
+              disk_size_gb: 50
+              source_image: "{{ image }}"
+          machine_type: "{{ machine_type.stockcheck }}"
+          network_interfaces:
+          - network: "{{ network }}"
+          tags:
+            items:
+            - stockcheck
+          labels:
+            environment: stockcheckprod
+          metadata:
+            startup-script: |
+              #!/bin/bash
+              yum update -y
+              yum install httpd git -y
+              systemctl enable httpd --now
+              firewall-cmd --add-port=80/tcp --permanent        
+              firewall-cmd --add-port=443/tcp --permanent        
+              firewall-cmd --add-port=22/tcp --permanent        
+              firewall-cmd --reload
+            ssh_user: "{{ ssh_user }}"
+            ssh_key: "{{ ssh_key }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: stockcheck_inst_template
+
+    - name: create a region instance group manager
+      google.cloud.gcp_compute_region_instance_group_manager:
+        name: stockcheck-ins-grp-mgr
+        base_instance_name: stockcheck-prod
+        region: us-central1
+        instance_template: "{{ stockcheck_inst_template }}"
+        named_ports:
+          - name: http
+            port: 80
+        target_size: 2
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: stockcheck_ins_grp_mgr
+
+    - name: debug stockcheck_ins_grp_mgr
+      debug: var=stockcheck_ins_grp_mgr.instanceGroup
+
+    - name: create a stockcheck region autoscaler
+      google.cloud.gcp_compute_region_autoscaler:
+        name: stockcheck-prod-region-autoscaler
+        region: us-central1
+        autoscaling_policy:
+          min_num_replicas: 2
+          max_num_replicas: 5
+          cool_down_period_sec: 60
+          cpu_utilization:
+            utilization_target: '0.5'
+        target: "{{ stockcheck_ins_grp_mgr.selfLink }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+ 
+    - name: create a HTTP health check
+      google.cloud.gcp_compute_http_health_check:
+        name: httphealthcheck-backendservice
+        healthy_threshold: 10
+        port: 80
+        timeout_sec: 2
+        unhealthy_threshold: 5
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: healthcheck
+ 
+    - name: debug healthcheck
+      debug: var=healthcheck
+ 
+ 
+ 
+    - name: create a backend service
+      google.cloud.gcp_compute_backend_service:
+        name: test-backendservice
+        backends:
+        - group: "{{ stockcheck_ins_grp_mgr.instanceGroup }}"
+          balancing_mode: UTILIZATION
+          capacity_scaler: '1.0'
+          max_utilization: '0.8'
+        health_checks:
+        - "{{ healthcheck.selfLink }}"
+        enable_cdn: 'true'
+        load_balancing_scheme: EXTERNAL
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: backendservice
+      ignore_errors: yes
+ 
+    - name: debug backendservice
+      debug: var=backendservice
+ 
+    - name: create a URL map
+      google.cloud.gcp_compute_url_map:
+        name: test-urlmap-gfr
+        default_service: "{{ backendservice }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: urlmap
+ 
+    - name: create a target HTTP proxy
+      google.cloud.gcp_compute_target_http_proxy:
+        name: target-test-proxy-gfr
+        url_map: "{{ urlmap }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: httpproxy
+ 
+    - name: create a global address for stockchecker
+      gcp_compute_global_address:
+        name: "stockcheck-prod-globaladdress"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+      register: stockcheck_globaladdress
+ 
+    - name: create a global forwarding rule
+      google.cloud.gcp_compute_global_forwarding_rule:
+        name: test-pub-gfr
+        ip_address: "{{ stockcheck_globaladdress.address }}"
+        ip_protocol: TCP
+        port_range: 80-80
+        target: "{{ httpproxy.selfLink }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: scforwardingrule
+ 
+  post_tasks:
+    - debug:
+        msg: "Load balancer IP: {{ scforwardingrule['IPAddress'] }}"
+        #- name: Health Check for stockcheck
+        #  google.cloud.gcp_compute_region_health_check:
+        #    name: "stockcheck-region-hc"
+        #    type: "HTTP"
+        #    http_health_check:
+        #      port: 80
+        #    healthy_threshold: 10
+        #    timeout_sec: 2
+        #    unhealthy_threshold: 5
+        #    region: us-central1
+        #    project: "{{ gcp_project }}"
+        #    auth_kind: "{{ gcp_cred_kind }}"
+        #    service_account_file: "{{ gcp_cred_file }}"
+        #    state: present
+        #  register: stockcheck_region_hc
+
+        #- name: create a region backend service
+        #  google.cloud.gcp_compute_region_backend_service:
+        #    name: stockcheck-region-be
+        #    backends:
+        #    - group: "{{ stockcheck_ins_grp_mgr.instanceGroup }}"
+        #    protocol: HTTP
+        #    health_checks:
+        #    - "{{ stockcheck_region_hc.selfLink }}"
+        #    region: us-central1
+        #    project: "{{ gcp_project }}"
+        #    auth_kind: "{{ gcp_cred_kind }}"
+        #    service_account_file: "{{ gcp_cred_file }}"
+        #    state: present
+        #  register: backendservice
+
+        #- name: debug backendservice
+        #  debug:
+        #    var: backendservice
