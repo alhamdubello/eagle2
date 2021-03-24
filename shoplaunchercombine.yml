@@ -1,0 +1,6 @@
+---
+- name: create shoplauncher websevers
+  import_playbook: shoplauncher.yml
+
+- name: creating shoplauncher loadbalancing
+  import_playbook: shoplauncher-lb.yml

@@ -7,6 +7,11 @@ tools:
   - supervisor
   - htop
   - nc
+ubuntu: 
+  - git
+  - rsync
+  - tmux
+  - htop
 groups_var:
   - name: sysadmin
     gid: 1801
