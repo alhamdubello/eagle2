@@ -5,6 +5,8 @@ tools:
   - rsync
   - tmux
   - supervisor
+  - htop
+  - nc
 groups_var:
   - name: sysadmin
     gid: 1801

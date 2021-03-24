@@ -1,0 +1,177 @@
+---
+- name: Create Shoplauncher Mariadb instances
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - gce_vars/auth
+    - gce_vars/machines
+    - gce_vars/zone
+  tasks:
+    - name: create a disk mapped for shoplauncherdb01 instance 1 - Centos 8
+      gcp_compute_disk:
+        name: shoplauncherdb01-disk-instance1
+        size_gb: 2000
+        type: pd-ssd
+        source_image: "{{ image }}"
+        zone: "{{ zone.za }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: shoplauncherdb01_disk_instance1
+
+    - name: create a disk mapped for shoplauncherdb02 instance 2 - Centos 8
+      gcp_compute_disk:
+        name: shoplauncherdb02-disk-instance2
+        size_gb: 2000
+        type: pd-ssd
+        source_image: "{{ image }}"
+        zone: "{{ zone.zb }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: shoplauncherdb02_disk_instance2
+
+    - name: create a VPC stockcheck network
+      gcp_compute_network:
+        name: stockchecker-subnetwork
+        auto_create_subnetworks: 'true'
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: network
+
+    - name: create a firewall rules for shoplauncher database
+      gcp_compute_firewall:
+        name: shoplauncher-db-fw-ports
+        network: "{{ network }}"
+        allowed:
+          - ip_protocol: icmp
+          - ip_protocol: tcp
+            ports:
+              - '22'
+              - '80'
+              - '443'
+              - '3306'
+              - '4567'
+              - '4568'
+              - '4444'
+          - ip_protocol: udp
+            ports:
+              - '4567'
+        target_tags:
+          - shoplauncherdb
+        source_tags:
+          - shoplauncherdb
+          - kibana
+          - management
+          - elasticsearch
+          - greeneagle
+          - greeneagledev
+          - redis
+          - shoplauncher
+          - shoplauncherdev
+          - stockcheck
+        source_ranges:
+          - '130.211.0.0/22'
+          - '35.191.0.0/16'
+          - '209.85.152.0/22'
+          - '209.85.204.0/22'
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: firewall
+
+    - name: create the shoplauncherdb01 app instance 1
+      gcp_compute_instance:
+        name: "{{ sldb_zonea }}"
+        machine_type: "{{ machine_type.shoplauncherdb }}"
+        disks:
+          - index: 0
+            auto_delete: 'no'
+            boot: 'true'
+            source: "{{ shoplauncherdb01_disk_instance1 }}"
+        labels:
+          environment: shoplauncherdbprod
+        network_interfaces:
+          - network: "{{ network }}"
+        tags:
+          items:
+            - shoplauncherdb
+        metadata:
+          ssh_user: "{{ ssh_user }}"
+          ssh_key: "{{ ssh_key }}"
+        zone: "{{ zone.za }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: shoplauncherdb01
+
+    - name: create shoplauncherdb02
+      gcp_compute_instance:
+        name: "{{ sldb_zoneb }}"
+        machine_type: "{{ machine_type.shoplauncherdb }}"
+        disks:
+          - index: 0
+            auto_delete: 'no'
+            boot: 'true'
+            source: "{{ shoplauncherdb02_disk_instance2 }}"
+        network_interfaces:
+          - network: "{{ network }}"
+        tags:
+          items:
+            - shoplauncherdb
+        metadata:
+          ssh_user: "{{ ssh_user }}"
+          ssh_key: "{{ ssh_key }}"
+        zone: "{{ zone.zb }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: shoplauncherdb02
+
+    - debug: var=shoplauncherdb01.networkInterfaces[0].networkIP
+    - debug: var=shoplauncherdb02.networkInterfaces[0].networkIP
+
+    - name: Add shoplauncherdb01 to group shoplauncherdb
+      add_host:
+        name: "{{ shoplauncherdb01.networkInterfaces[0].networkIP }}"
+        groups: shoplauncherdb
+
+    - name: Add shoplauncherdb02 to group shoplauncherdb
+      add_host:
+        name: "{{ shoplauncherdb02.networkInterfaces[0].networkIP }}"
+        groups: shoplauncherdb
+    
+  post_tasks:
+    - name: Wait for SSH for shoplauncherdb01
+      wait_for:
+        delay: 30
+        host: "{{ shoplauncherdb01.networkInterfaces[0].networkIP }}"
+        port: 22
+        state: started
+        timeout: 120
+
+    - name: Wait for SSH for shoplauncherdb02
+      wait_for:
+        delay: 30
+        host: "{{ shoplauncherdb02.networkInterfaces[0].networkIP }}"
+        port: 22
+        state: started
+        timeout: 120
+
+
+- hosts: shoplauncherdb
+  roles:
+    - mariadb
+    - users
+  gather_facts: true
+  become: true
+  vars:
+    ansible_user: chudieagle
+    ansible_ssh_private_key_file: /home/chudieagle/.ssh/id_chudieagle_rsa

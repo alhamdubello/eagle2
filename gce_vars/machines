@@ -7,6 +7,7 @@ machine_type:
   elastics: n1-standard-1
   shoplauncher: n1-standard-1
   shoplauncherdev: n1-standard-1
+  shoplauncherdb: n2-standard-8
   kibana: n1-standard-1
 image: https://www.googleapis.com/compute/v1/projects/centos-cloud/global/images/centos-8-v20210122
 ubuntuimage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2010-groovy-v20210224 

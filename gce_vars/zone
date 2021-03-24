@@ -26,3 +26,6 @@ sl_zonec: shoplauncher03
 sl_dev_zonea: shoplauncherdev01
 
 kb_zonea: kibana
+
+sldb_zonea: shoplauncherdb01
+sldb_zoneb: shoplauncherdb02

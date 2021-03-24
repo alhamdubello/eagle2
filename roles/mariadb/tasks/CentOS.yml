@@ -101,3 +101,19 @@
     immediate: yes
     state: enabled
   loop: "{{ centos_mariadb_ports }}"
+
+- name: Installing Mytop
+  dnf:
+    name: 
+      - mytop
+      - iotop
+      - htop
+    state: present
+
+- name: configuration template for Mytop
+  template:
+    src: templates/root/centos/.mytop
+    dest: /root/.mytop
+    owner: root
+    mode: '0600'
+
