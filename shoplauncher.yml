@@ -155,7 +155,7 @@
   roles:
     - nginx
     - users
-    - mariadb
+      #- mariadb
   gather_facts: true
   become: true
   vars:

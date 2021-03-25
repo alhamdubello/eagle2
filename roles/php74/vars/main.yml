@@ -20,3 +20,14 @@ centos_php74_pkgs:
   - php-fpm
   - php-gd
   - php-mysqlnd
+  - php 
+  - php-cli
+  - php-zip 
+  - php-devel
+  - php-mcrypt 
+  - php-mbstring 
+  - php-curl 
+  - php-xml 
+  - php-pear 
+  - php-bcmath 
+  - php-json
