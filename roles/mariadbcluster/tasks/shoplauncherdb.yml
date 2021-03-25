@@ -1,0 +1,24 @@
+---
+#configuration of Master Slave mariadb cluster
+- name: configure master my.cnf
+  template:
+    src: templates/shoplauncherdb01.my.cnf.j2
+    dest: /etc/my.cnf.d/mariadb-server.cnf
+  notify: restart mariadb
+  when: ansible_hostname == "shoplauncherdb01"
+
+- name: creating replication user 'replication'
+  mysql_user:
+    name: replication
+    password: "{{ replicapass }}"
+    priv: '*.*:REPLICATION SLAVE'
+    host: "10.128.0.58"
+    state: present
+  when: ansible_hostname == "shoplauncherdb01"
+
+- name: configure slave my.cnf
+  template:
+    src: templates/shoplauncherdb02.my.cnf.j2
+    dest: /etc/my.cnf.d/mariadb-server.cnf
+  notify: restart mariadb
+  when: ansible_hostname == "shoplauncherdb02"

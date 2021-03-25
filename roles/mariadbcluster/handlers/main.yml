@@ -1,2 +1,6 @@
 ---
 # handlers file for mariadbcluster
+- name: restart mariadb
+  systemd:
+    name: mariadb
+    state: restarted

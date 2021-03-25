@@ -168,8 +168,9 @@
 
 - hosts: shoplauncherdb
   roles:
-    - mariadb
     - users
+    - mariadb
+    - mariadbcluster
   gather_facts: true
   become: true
   vars:

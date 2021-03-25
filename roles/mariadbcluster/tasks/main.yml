@@ -1,2 +1,4 @@
 ---
 # tasks file for mariadbcluster
+- name: setup master slave replication for shoplauncherdb
+  include_tasks: shoplauncherdb.yml 
