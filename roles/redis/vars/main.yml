@@ -1,0 +1,9 @@
+---
+# vars file for redis
+centos_pkgs:
+  - epel-release
+  - redis
+  - nano
+centos_redis_ports:
+  - 22/tcp
+  - 6379/tcp

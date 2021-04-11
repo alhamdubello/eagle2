@@ -1,0 +1,5 @@
+---
+# tasks file for redis
+- name: Centos Redis Install
+  include: centos.yml
+  when: ansible_distribution == "CentOS"

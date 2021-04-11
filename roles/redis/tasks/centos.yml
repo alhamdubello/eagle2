@@ -1,0 +1,31 @@
+---
+# tasks file for redis
+- name: "TASK 1: Install EPEL Repo, Redis and other packages dependencies"
+  dnf:
+    name: "{{ centos_pkgs }}"
+    state: present
+
+- name: "TASK 2: Configure Redis config file"
+  template:
+    src: templates/redis-centos.j2
+    dest: /etc/redis.conf
+
+- name: "TASK 3: Start the Redis Services"
+  systemd:
+    name: redis
+    state: started
+    enabled: yes
+
+- name: "TASK 4: Make sure firewalld is running"
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: "TASK 5: Make sure Redis port is open."
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{ centos_redis_ports }}"

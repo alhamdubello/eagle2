@@ -1,12 +1,10 @@
 ---
 # vars file for users
 tools:
+  - epel-release
   - git
   - rsync
   - tmux
-  - supervisor
-  - htop
-  - nc
 ubuntu: 
   - git
   - rsync

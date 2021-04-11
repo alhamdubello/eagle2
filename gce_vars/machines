@@ -2,7 +2,7 @@
 # Common Compute Engine instance variables
 machine_type: 
   stockcheck: n1-standard-1
-  redis: n1-standard-1
+  redis: n1-standard-2
   greeneagle: n1-standard-1
   elastics: n1-standard-1
   shoplauncher: n1-standard-1
