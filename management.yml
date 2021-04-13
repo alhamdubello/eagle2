@@ -140,6 +140,7 @@
   gather_facts: true
   become: true
   roles:
+    - users
     - apache
     - php74
     - mariadb

@@ -53,6 +53,34 @@
     key: "{{ lookup('file', '/data/keys/id_liberty.pub') }}"
     state: present
 
+- name: copying keys for liberty second key
+  authorized_key:
+    user: liberty
+    key: "{{ lookup('file', '/data/keys/id_liberty2.pub') }}"
+    state: present
+
+- name: copying keys for liberty third key
+  authorized_key:
+    user: liberty
+    key: "{{ lookup('file', '/data/keys/id_liberty3.pub') }}"
+    state: present
+
+- name: copying keys for tony
+  authorized_key:
+    user: tony
+    key: "{{ lookup('file', '/data/keys/id_tony.pub') }}"
+    state: present
+
+- name: adding sudoers for webadmin
+  template:
+    src: templates/webadmin_sudoers.j2
+    dest: /etc/sudoers.d/webadmin_sudoers
+
+- name: adding sudoers for webadmin
+  template:
+    src: templates/sysadmin_sudoers.j2
+    dest: /etc/sudoers.d/sysadmin_sudoers
+
 - name: copying keys for tony
   authorized_key:
     user: tony

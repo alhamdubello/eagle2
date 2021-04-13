@@ -1,4 +1,7 @@
 ---
+- name: create shoplauncher db servers
+  import_playbook: shoplauncherDB.yml
+
 - name: create shoplauncher websevers
   import_playbook: shoplauncher.yml
 
