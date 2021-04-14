@@ -68,13 +68,6 @@
     proto: tcp
   loop: "{{ ubuntu_mariadb_ports }}"
 
-- name: update mysql root password for all root accounts
-  mysql_user:
-    name: root
-    host: localhost
-    password: "{{ ubuntu_root_db_password }}"
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-
 - name: copy .my.cnf file with root password credentials
   template:
     src: templates/root/ubuntu/.my.cnf
@@ -82,6 +75,15 @@
     owner: root
     mode: '0600'
   tags: cnf
+
+- name: update mysql root password for all root accounts
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ ubuntu_root_db_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  tags: rootpass
+
 
 - name: update mysql root password login for all root accounts
   mysql_user:

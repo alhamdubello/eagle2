@@ -1,0 +1,15 @@
+---
+- name: add shoplauncher
+  mysql_db:
+    name: shoplauncher
+    collation: utf8_bin
+    encoding: utf8
+    state: present
+
+- name: add db user
+  mysql_user:
+    name: shoplauncher
+    password: "{{ shoplauncher_dbpass }}"
+    priv: 'shoplauncher.*:ALL'
+    host: "{{ shoplauncher_host }}"
+    state: present

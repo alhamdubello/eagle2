@@ -25,3 +25,5 @@ mariadb_apt_dependencies:
   - libmysqlclient-dev
   - python3-pip
 ansible_python_interpreter: /usr/bin/python3 
+shoplauncher_dbpass: '#Dino#Lino12'
+shoplauncher_host: '10.128.0.%'
