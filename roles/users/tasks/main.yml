@@ -36,10 +36,15 @@
   with_items:
     - "{{ users_var }}"
 
-- name: copying keys for manyondoma
+- name: copying keys for mndoma
   authorized_key:
     user: mndoma
     key: "{{ lookup('file', '/data/keys/id_mndoma.pub') }}"
+
+- name: copying keys for mndoma2
+  authorized_key:
+    user: mndoma
+    key: "{{ lookup('file', '/data/keys/id_mndoma2.pub') }}"
 
 - name: copying keys for chukwudi
   authorized_key:
@@ -74,7 +79,7 @@
 - name: copying keys for kingsley
   authorized_key:
     user: kingsley
-    key: "{{ lookup('file', '/data/keys/id_kingsley.pub') }}"
+    key: "{{ lookup('file', '/data/keys/id_kingsley2.pub') }}"
     state: present
 
 - name: adding sudoers for webadmin

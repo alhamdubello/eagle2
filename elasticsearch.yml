@@ -69,6 +69,7 @@
               - '80'
               - '443'
               - '9200-9400'
+              - '10050-10051'
         target_tags:
           - elasticsearch
         source_tags:
@@ -89,6 +90,7 @@
       gcp_compute_instance:
         name: "{{ es_zonea }}"
         machine_type: "{{ machine_type.elastics }}"
+        deletion_protection: yes
         disks:
           - index: 0
             auto_delete: 'no'

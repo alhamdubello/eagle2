@@ -1,0 +1,96 @@
+---
+# tasks file for haproxy
+- name: Disable SELINUX
+  selinux:
+    state: disabled
+
+- name: Ensure EPEL is installed
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Install keepalived
+  dnf:
+    name: keepalived
+    state: present
+    
+- name: Starting the keepalived service
+  systemd:
+    name: keepalived
+    state: started
+    enabled: yes
+    
+    #- name: KeepaliveD configuration
+    #  template:
+    #    src: templates/keepalived.{{ ansible_hostname }}.conf.j2
+    #    dest: /etc/keepalived/keepalived.conf
+    #  notify: restart keepalived
+
+- name: Install haproxy
+  dnf:
+    name: haproxy
+    state: present
+
+- name: Enusre firewalld is running
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Open ports for http and https
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: true
+  loop:
+    - 80/tcp
+    - 22/tcp
+    - 443/tcp
+    - 8404/tcp
+   
+- name: Copy updated SSL certificate
+  copy:
+    src: templates/certs/stockcheckerapp.com.pem
+    dest: /etc/pki/tls/certs/stockcheckerapp.com.pem
+    owner: root
+    group: root
+    mode: '0777'
+  tags: copyssl
+ 
+- name: create custom error
+  file:
+    path: /etc/haproxy/errors-custom
+    state: directory
+    mode: '0755'
+
+- name: copy custom http error files
+  copy:
+    src: files/errors-custom
+    dest: /etc/haproxy
+
+- name: Ensure haproxy is configured
+  template:
+    src: templates/haproxy.j2
+    dest:  /etc/haproxy/haproxy.cfg
+  notify: restart haproxy
+  tags: haproxyconfig
+      
+- name: Start haproxy service
+  systemd:
+    name: haproxy
+    state: started
+    enabled: yes
+
+- name: create logging directory for haproxy
+  file:
+    path: /var/lib/haproxy/dev
+    state: directory
+    mode: '0755'
+  notify: restart haproxy
+     
+- name:  create rsyslog for haproxy logs
+  template:
+    src: templates/haproxyrsyslog.j2
+    dest: /etc/rsyslog.d/99-haproxy.conf
+  notify: restart rsyslog
