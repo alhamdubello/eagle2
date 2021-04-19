@@ -1,2 +1,3 @@
 ---
 # vars file for haproxy
+path_to_sslcert: /etc/letsencrypt/live/stockcheck.com/haproxy.pem

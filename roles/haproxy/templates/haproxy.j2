@@ -39,7 +39,8 @@ frontend stats
 
 frontend http-80andhttps-443
   bind *:80
-  #bind *:443 ssl crt /etc/pki/tls/certs/stockcheckerapp.com.pem alpn h2,http/1.1
+  bind *:443 ssl crt {{ path_to_sslcert }} alpn h2,http/1.1
+  http-request redirect scheme https unless { ssl_fc }
   timeout client 60s
   mode http
   use_backend  app1_servers
