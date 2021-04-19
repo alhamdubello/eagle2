@@ -76,6 +76,12 @@
     key: "{{ lookup('file', '/data/keys/id_tony.pub') }}"
     state: present
 
+- name: copying keys for tony second key
+  authorized_key:
+    user: tony
+    key: "{{ lookup('file', '/data/keys/id_tony2.pub') }}"
+    state: present
+
 - name: copying keys for kingsley
   authorized_key:
     user: kingsley
