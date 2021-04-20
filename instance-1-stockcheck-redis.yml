@@ -41,6 +41,7 @@
               - '80'
               - '443'
               - '3389'
+              - '10050-10051'
         source_tags:
           - http-server
           - https-server
