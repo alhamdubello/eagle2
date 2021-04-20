@@ -37,17 +37,26 @@ frontend stats
     stats refresh 10s
     stats admin if LOCALHOST
 
-frontend http-80andhttps-443
+frontend {{ frontend['name'] }}
   bind *:80
-  bind *:443 ssl crt {{ path_to_sslcert }} alpn h2,http/1.1
+  bind *:443 ssl crt {{ frontend['path_to_sslcert'] }} alpn h2,http/1.1
   http-request redirect scheme https unless { ssl_fc }
   timeout client 60s
   mode http
-  use_backend  app1_servers
+  use_backend  {{ frontend['backend'] }}
 
-backend app1_servers
+{% endfor %}
+
+
+
+{% for backend in backends %}
+
+backend {{ backend['name'] }}
   timeout connect 10s
   timeout server 5s
   mode http
-  server stockcheck01 10.128.0.34
-  server stockcheck02 10.128.0.35
+{% for server in backend['servers'] %}
+  server {{ server['name'] }} {{ server['ip'] }} {{ server['port'] }}
+{% endfor %}
+
+{% endfor %}

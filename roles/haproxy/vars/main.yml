@@ -1,3 +1,15 @@
 ---
 # vars file for haproxy
-path_to_sslcert: /etc/letsencrypt/live/stockcheck.com/haproxy.pem
+frontends:
+  - name: http-80andhttps-443
+    backend: app1_servers
+    path_to_sslcert: /etc/letsencrypt/live/stockcheck.com/haproxy.pem
+backends:
+  - name: app1_servers
+    servers:
+      - name: stockcheck01
+        ip: 10.128.0.34
+        port: 80
+      - name: stockcheck02
+        ip: 10.128.0.35
+        port: 80

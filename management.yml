@@ -52,6 +52,8 @@
               - '22'
               - '80'
               - '443'
+              - '3000'
+
         target_tags:
           - management
         source_tags:
