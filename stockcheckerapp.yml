@@ -53,6 +53,7 @@
               - '80'
               - '22'
               - '443'
+              - '10050-10051'
         target_tags:
           - stockcheck
           - shoplauncher
