@@ -20,6 +20,12 @@
     state: started
     enabled: yes
 
+- name: Update the Zabbix Config files
+  template:
+    src: zabbix-agent.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf
+  notify: restart zabbix-agent 
+
 - name: Enusre firewalld is running
   systemd:
     name: firewalld
