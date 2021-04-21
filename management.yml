@@ -142,6 +142,7 @@
   gather_facts: true
   become: true
   roles:
+    - zabbix-agent
     - users
     - apache
     - php74

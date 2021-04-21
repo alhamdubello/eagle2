@@ -126,6 +126,7 @@
 
 - hosts: haproxy
   roles:
+    - zabbix-agent
     - users
     - haproxy
   gather_facts: True

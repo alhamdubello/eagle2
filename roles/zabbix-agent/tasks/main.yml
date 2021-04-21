@@ -1,0 +1,11 @@
+---
+# tasks file for zabbix-agent
+- name: Deploying zabbix-agent on CentOS boxes
+  include: CentOS.yml
+  when:
+    ansible_distribution == "CentOS"
+
+- name: Deploying zabbix-agent on Ubuntu boxes
+  include: Ubuntu.yml
+  when:
+    ansible_distribution == "Ubuntu"

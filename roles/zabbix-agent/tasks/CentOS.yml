@@ -1,0 +1,35 @@
+---
+- name: Ensuring EPEL repo
+  dnf:
+    name: epel-release.noarch
+    state: present
+
+- name: Installing Zabbix Repository
+  dnf:
+    name: '{{ centos_zabbixrepo }}'
+    state: present
+
+- name: Installing Zabbix-Agent for CentOS
+  dnf:
+    name: zabbix-agent
+    state: present
+
+- name: Enable and start Zabbix-agent
+  systemd:
+    name: zabbix-agent
+    state: started
+    enabled: yes
+
+- name: Enusre firewalld is running
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Enabling ports for Zabbix-agent Serivces 
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{ centos_zabbixagent_ports }}"
