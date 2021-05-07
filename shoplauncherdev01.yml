@@ -121,9 +121,7 @@
 - hosts: shoplauncherdev
   roles:
     - php74
-    - nginx
     - users
-      #- mariadb
   gather_facts: True
   become: true
   vars:

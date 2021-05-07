@@ -1,0 +1,60 @@
+- name: Get Master instances
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - ../gce_vars/auth
+    - ../gce_vars/machines
+    - ../gce_vars/zone
+  tasks:
+    - name: get info on Master instance
+      gcp_compute_instance_info:
+        zone: "{{ zone.za }}"
+        filters:
+        - name = master
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+      register: master
+
+    - debug: var=master.resources[0].networkInterfaces[0].accessConfigs[0].natIP
+
+    - name: Add master to group master
+      add_host:
+        name: "{{ master.resources[0].networkInterfaces[0].accessConfigs[0].natIP }}"
+        groups: master
+
+  post_tasks:
+    - name: Wait for SSH for instance Master in first zone
+      wait_for:
+        delay: 30
+        host: "{{ master.resources[0].networkInterfaces[0].accessConfigs[0].natIP }}"
+        port: 22
+        state: started
+        timeout: 120
+ 
+- hosts: master
+  gather_facts: true
+  become: true
+  vars:
+    ansible_user: chudieagle
+    ansible_ssh_private_key_file: ~/.ssh/id_chudieagle_rsa
+  tasks:
+    - name: Install Zabbix Agent
+      include_role:
+        name: zabbix-agent
+    - name: Updating Users
+      include_role:
+        name: users
+      tags: users
+    - name: Install Apache Webserver
+      include_role:
+        name: apache
+    - name: Installing php74
+      include_role:
+        name: php74
+    - name: Installing mariadb
+      include_role:
+        name: mariadb
+    - name: Installing mediawiki
+      include_role:
+        name: mediawiki
