@@ -1,5 +1,6 @@
 ---
 # vars file for redis
+redis_password: gamsudickara
 centos_pkgs:
   - epel-release
   - redis
