@@ -3,21 +3,52 @@
   apt:
     update_cache: yes
 
-- name: Install Nginx for Ubuntu
+- name: Install Zabbix Repo Ubuntu
   apt:
-    name: nginx
+    deb: https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+focal_all.deb
     state: present
 
-- name: Enable and Start services for nginx ubuntu
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Zabbix-agent for Ubuntu
+  apt:
+    name: zabbix-agent
+    state: present
+
+- name: Enable and Start services for zabbix-agent on ubuntu
   service:
-    name: nginx
+    name: zabbix-agent
     state: started
     enabled: yes
 
-- name: Enusre ufw is running
+- name: Enusre ufw Zabbix ports are open
   ufw:
     rule: allow
     port: "{{ item }}"
     proto: tcp
-  loop: "{{ ubuntu_nginx_ports }}"
+  loop: "{{ ubuntu_zabbix_ports }}"
 
+- name: "Adding {{ ansible_hostname }} to Zabbix"
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "{{ zabbix_server_url }}"
+    login_user: "{{ zabbix_admin }}"
+    login_password: "{{ zabbix_password }}"
+    host_name: "{{ ansible_hostname }}"
+    visible_name: "{{ ansible_hostname }}"
+    description: "{{ ansible_hostname }}"
+    host_groups:
+      - Linux servers
+    link_templates:
+      - Linux by Zabbix agent
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 1
+        ip: "{{ ansible_default_ipv4.address }}"
+        dns: ""
+        port: "10050"
+    status: enabled
+    state: present

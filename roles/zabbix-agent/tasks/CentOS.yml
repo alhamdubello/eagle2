@@ -8,6 +8,7 @@
   dnf:
     name: '{{ centos_zabbixrepo }}'
     state: present
+    disable_gpg_check: yes
 
 - name: Installing Zabbix-Agent for CentOS
   dnf:
@@ -39,3 +40,26 @@
     immediate: yes
     state: enabled
   loop: "{{ centos_zabbixagent_ports }}"
+
+- name: "Adding {{ ansible_hostname }} to Zabbix"
+  local_action:
+    module: community.zabbix.zabbix_host
+    server_url: "{{ zabbix_server_url }}"
+    login_user: "{{ zabbix_admin }}"
+    login_password: "{{ zabbix_password }}"
+    host_name: "{{ ansible_hostname }}"
+    visible_name: "{{ ansible_hostname }}"
+    description: "{{ ansible_hostname }}"
+    host_groups:
+      - Linux servers
+    link_templates:
+      - Linux by Zabbix agent
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 1
+        ip: "{{ ansible_default_ipv4.address }}"
+        dns: ""
+        port: "10050"
+    status: enabled
+    state: present

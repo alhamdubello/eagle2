@@ -9,10 +9,10 @@
   tasks:
     - name: create a disk mapped for Redis Node - Centos 8
       gcp_compute_disk:
-        name: redis1-disk-instance
-        size_gb: 50
+        name: ubudemo1-disk-instance
+        size_gb: 30
         type: pd-ssd
-        source_image: "{{ image }}"
+        source_image: "{{ ubuntuimage }}"
         zone: "{{ zone.za }}"
         project: "{{ gcp_project }}"
         auth_kind: "{{ gcp_cred_kind }}"
@@ -30,7 +30,7 @@
         state: present
       register: network
     
-    - name: create a firewall rules for redis app
+    - name: create a firewall rules for ubudemo app
       gcp_compute_firewall:
         name: redis-fw-ports
         network: "{{ network }}"
@@ -60,10 +60,10 @@
         state: present
       register: firewall
 
-    - name: create the Redis instance
+    - name: create the ubudemo1 instance
       gcp_compute_instance:
-        name: redis1-instance1
-        machine_type: "{{ machine_type.redis }}"
+        name: ubudemo1-instance1
+        machine_type: "{{ machine_type.stockcheck }}"
         disks:
           - index: 0
             auto_delete: 'no'
@@ -84,27 +84,27 @@
         auth_kind: "{{ gcp_cred_kind }}"
         service_account_file: "{{ gcp_cred_file }}"
         state: present
-      register: redisinstance1
+      register: ubudemoinstance1
 
     - name: Show Redis Instance Details Internal IP
       debug:
-        msg: "The Redis instance is accessible at {{ redisinstance1.networkInterfaces[0].networkIP }}"
+        msg: "The Redis instance is accessible at {{ ubudemoinstance1.networkInterfaces[0].networkIP }}"
 
-    - name: Add redis1 to group redis1
+    - name: Add ubudemo1 to group ubudemo1
       add_host:
-        name: "{{ redisinstance1.networkInterfaces[0].networkIP }}"
-        groups: redis
+        name: "{{ ubudemoinstance1.networkInterfaces[0].networkIP }}"
+        groups: ubudemo
 
   post_tasks:
     - name: Wait for SSH for instance1
       wait_for:
         delay: 30
-        host: "{{ redisinstance1.networkInterfaces[0].networkIP }}"
+        host: "{{ ubudemoinstance1.networkInterfaces[0].networkIP }}"
         port: 22
         state: started
         timeout: 120
 
-- hosts: redis
+- hosts: ubudemo
   gather_facts: true
   become: true
   vars:
@@ -113,5 +113,3 @@
     ansible_python_interpreter: /usr/bin/python3
   roles:
     - zabbix-agent
-    - users
-    - redis
