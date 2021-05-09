@@ -11,6 +11,9 @@ centos_zabbixagent_ports:
 zabbix_admin: autosysadmin
 zabbix_password: Xxhbyd5z
 zabbix_server_url: http://35.194.51.251/zabbix
+zabbix_ubuntu_url: https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+focal_all.deb 
+zabbix_ubuntu_dest_pkg: /tmp/
+zabbix_ubuntu_pkg: zabbix-release_5.0-1+focal_all.deb
 ubuntu_zabbix_ports:
   - '10050'
   - '10051'

@@ -4,3 +4,8 @@
   systemd:
     name: zabbix-agent
     state: restarted
+ 
+- name: restart ubuntu zabbix-agent
+  service:
+    name: zabbix-agent
+    state: restarted

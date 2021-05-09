@@ -3,10 +3,14 @@
   apt:
     update_cache: yes
 
+- name: Download the Zabbix Repo for Ubuntu 
+  get_url:
+    url: "{{ zabbix_ubuntu_url }}"
+    dest: "{{ zabbix_ubuntu_dest_pkg }}"
+
 - name: Install Zabbix Repo Ubuntu
   apt:
-    deb: https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+focal_all.deb
-    state: present
+    deb: "{{ zabbix_ubuntu_dest_pkg }}/{{ zabbix_ubuntu_pkg }}"
 
 - name: Run the equivalent of "apt-get update" as a separate step
   apt:
@@ -30,6 +34,12 @@
     proto: tcp
   loop: "{{ ubuntu_zabbix_ports }}"
 
+- name: Update the Zabbix Config files
+  template:
+    src: zabbix-agent-ubuntu.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf
+  notify: restart ubuntu zabbix-agent
+
 - name: "Adding {{ ansible_hostname }} to Zabbix"
   local_action:
     module: community.zabbix.zabbix_host
@@ -43,8 +53,9 @@
       - Linux servers
     link_templates:
       - Linux by Zabbix agent
+      - Zabbix Server
     interfaces:
-      - type: 1
+      - type: '1'
         main: 1
         useip: 1
         ip: "{{ ansible_default_ipv4.address }}"
