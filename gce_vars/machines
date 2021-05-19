@@ -10,5 +10,6 @@ machine_type:
   shoplauncherdb: n2-standard-8
   kibana: n1-standard-1
   haproxy: n1-standard-1
+  ubudemo: n2-standard-2
 image: https://www.googleapis.com/compute/v1/projects/centos-cloud/global/images/centos-8-v20210122
 ubuntuimage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2010-groovy-v20210224 

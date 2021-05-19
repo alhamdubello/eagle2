@@ -63,7 +63,7 @@
     - name: create the ubudemo1 instance
       gcp_compute_instance:
         name: ubudemo1-instance1
-        machine_type: "{{ machine_type.stockcheck }}"
+        machine_type: "{{ machine_type.ubudemo }}"
         disks:
           - index: 0
             auto_delete: 'no'

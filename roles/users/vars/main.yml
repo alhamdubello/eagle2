@@ -32,6 +32,9 @@ users_var:
   - name: mndoma
     group:
       - webadmin
+  - name: greg
+    group:
+      - webadmin
   - name: chukwudi
     group:
       - sysadmin
@@ -46,3 +49,25 @@ users_var:
   - name: tony
     group: 
       - webadmin
+ssh_pub_keys:
+  - name: belloau
+    key: "{{ lookup('file', '/data/keys/id_belloau.pub') }}"
+  - name: chudieagle
+    key: "{{ lookup('file', '/data/keys/id_chudieagle_rsa.pub') }}"
+  - name: mndoma
+    key: "{{ lookup('file', '/data/keys/id_mndoma.pub') }}"
+  - name: greg
+    key: "{{ lookup('file', '/data/keys/id_greg.pub') }}"
+  - name: chukwudi
+    key: "{{ lookup('file', '/data/keys/id_chukwudi.pub') }}"
+  - name: kingsley
+    key: "{{ lookup('file', '/data/keys/id_kingsley.pub') }}"
+  - name: liberty
+    key: "{{ lookup('file', '/data/keys/id_liberty.pub') }}"
+  - name: tony
+    key: "{{ lookup('file', '/data/keys/id_tony.pub') }}"
+ssh_private_keys:
+  - name: belloau
+    privkey: /data/keys/private/id_belloau_rsa
+  - name: greg
+    privkey: /data/keys/private/id_greg_rsa

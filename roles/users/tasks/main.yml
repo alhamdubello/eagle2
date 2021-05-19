@@ -36,58 +36,21 @@
   with_items:
     - "{{ users_var }}"
 
-- name: copying keys for mndoma
+- name: copying users public keys
   authorized_key:
-    user: mndoma
-    key: "{{ lookup('file', '/data/keys/id_mndoma.pub', errors='ignore') }}"
+    user: "{{ item.name }}"
+    key: "{{ item.key }}"
+  with_items:
+    - "{{ ssh_pub_keys }}"
 
-- name: copying keys for mndoma2
-  authorized_key:
-    user: mndoma
-    key: "{{ lookup('file', '/data/keys/id_mndoma2.pub', errors='ignore') }}"
+- name: coping private keys
+  copy:
+    src: "{{ item.privkey }}"
+    dest: "/home/{{ item.name }}/.ssh/id_rsa"
+    mode: 0600
+  with_items:
+    - "{{ ssh_private_keys }}"
 
-- name: copying keys for chukwudi
-  authorized_key:
-    user: chukwudi
-    key: "{{ lookup('file', '/data/keys/id_chukwudi.pub', errors='ignore') }}"
-    state: present
-
-    #- name: copying keys for liberty
-    #  authorized_key:
-    #    user: liberty
-    #    key: "{{ lookup('file', '/data/keys/id_liberty.pub') }}"
-    #    state: present
-    #
-    #- name: copying keys for liberty second key
-    #  authorized_key:
-    #    user: liberty
-    #    key: "{{ lookup('file', '/data/keys/id_liberty2.pub') }}"
-    #    state: present
-    #
-    #- name: copying keys for liberty third key
-    #  authorized_key:
-    #    user: liberty
-    #    key: "{{ lookup('file', '/data/keys/id_liberty3.pub') }}"
-    #    state: present
-
-- name: copying keys for tony
-  authorized_key:
-    user: tony
-    key: "{{ lookup('file', '/data/keys/id_tony.pub', errors='ignore') }}"
-    state: present
-
-- name: copying keys for tony second key
-  authorized_key:
-    user: tony
-    key: "{{ lookup('file', '/data/keys/id_tony2.pub', errors='ignore') }}"
-    state: present
-
-    #- name: copying keys for kingsley
-    #  authorized_key:
-    #    user: kingsley
-    #    key: "{{ lookup('file', '/data/keys/id_kingsley2.pub') }}"
-    #    state: present
-    #
 - name: adding sudoers for webadmin
   template:
     src: templates/webadmin_sudoers.j2
@@ -97,12 +60,6 @@
   template:
     src: templates/sysadmin_sudoers.j2
     dest: /etc/sudoers.d/sysadmin_sudoers
-
-- name: copying keys for tony
-  authorized_key:
-    user: tony
-    key: "{{ lookup('file', '/data/keys/id_tony.pub', errors='ignore') }}"
-    state: present
 
 - name: adding sudoers for webadmin
   template:

@@ -120,7 +120,6 @@
 
 - hosts: shoplauncherdev
   roles:
-    - php74
     - users
   gather_facts: True
   become: true

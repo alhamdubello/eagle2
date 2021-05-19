@@ -1,0 +1,79 @@
+- name: Get Master instances
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - ../gce_vars/auth
+    - ../gce_vars/machines
+    - ../gce_vars/zone
+  tasks:
+    - name: get info on instance-1-service-containers instance
+      gcp_compute_instance_info:
+        zone: "{{ zone.za }}"
+        filters:
+        - name = instance-1-service-containers
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+      register: instance_1_containers
+
+    - name: get info on instance-1-stockcheck-redis instance
+      gcp_compute_instance_info:
+        zone: "{{ zone.za }}"
+        filters:
+        - name = instance-1-stockcheck-redis
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+      register: instance_1_stockcheck_redis
+
+    - name: get info on instance-1-stockcheck-web instance
+      gcp_compute_instance_info:
+        zone: "{{ zone.za }}"
+        filters:
+        - name = instance-1-stockcheck-web
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+      register: instance_1_stockcheck_web
+
+    - name: get info on shoplauncherdev01 instance
+      gcp_compute_instance_info:
+        zone: "{{ zone.za }}"
+        filters:
+        - name = shoplauncherdev01
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+      register: shoplauncherdev01
+
+    - name: Add  to group instance_1_containers
+      add_host:
+        name: "{{ instance_1_containers.resources[0].networkInterfaces[0].accessConfigs[0].natIP }}"
+        groups: instance_containers
+
+    - name: Add  to group instance_1_stockcheck_redis
+      add_host:
+        name: "{{ instance_1_stockcheck_redis.resources[0].networkInterfaces[0].accessConfigs[0].natIP }}"
+        groups: instance_containers
+
+    - name: Add  to group instance_1_stockcheck_web
+      add_host:
+        name: "{{ instance_1_stockcheck_web.resources[0].networkInterfaces[0].accessConfigs[0].natIP }}"
+        groups: instance_containers
+
+    - name: Add  to group shoplauncherdev01
+      add_host:
+        name: "{{ shoplauncherdev01.resources[0].networkInterfaces[0].accessConfigs[0].natIP }}"
+        groups: instance_containers
+
+ 
+- hosts: instance_containers
+  gather_facts: true
+  become: true
+  vars:
+    ansible_user: chudieagle
+    ansible_ssh_private_key_file: ~/.ssh/id_chudieagle_rsa
+  tasks:
+    - name: Install Zabbix Agent
+      include_role:
+        name: zabbix-agent

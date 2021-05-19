@@ -53,10 +53,15 @@
               - '80'
               - '443'
               - '3000'
+              - '10050'
+              - '10051'
 
         target_tags:
           - management
         source_tags:
+          - http-server
+          - https-server
+          - management
           - stockcheck
           - greeneagle
           - redis
@@ -105,9 +110,11 @@
                 type: ONE_TO_ONE_NAT
         tags:
           items:
+            - http-server
+            - https-server
             - management
             - stockcheck
-            - greenseagel
+            - greenseagle
             - redis
             - elasticsearch
         metadata:
@@ -143,11 +150,11 @@
   become: true
   roles:
     - zabbix-agent
-    - users
-    - apache
-    - php74
-    - mariadb
-    - mediawiki
+      #- users
+      #- apache
+      #- php74
+      #- mariadb
+      #- mediawiki
   vars:
     ansible_user: chudieagle
     ansible_ssh_private_key_file: ~/.ssh/id_chudieagle_rsa
