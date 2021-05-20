@@ -113,6 +113,7 @@
           items:
             - http-server
             - https-server
+            - shoplauncherdev
             - management
             - stockcheck
             - greenseagle
