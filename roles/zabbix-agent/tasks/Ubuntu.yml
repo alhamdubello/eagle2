@@ -51,6 +51,7 @@
     description: "{{ ansible_hostname }}"
     host_groups:
       - Linux servers
+      - Templates/Operating systems
     link_templates:
       - Linux by Zabbix agent
       - Zabbix Server
