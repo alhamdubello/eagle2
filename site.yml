@@ -1,6 +1,0 @@
----
-- name: create stockcheckapp websevers
-  import_playbook: stockcheckerapp.yml
-
-- name: creating stockchecker loadbalancing
-  import_playbook: stockcheckerapp-lb.yml
