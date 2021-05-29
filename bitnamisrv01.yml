@@ -41,6 +41,7 @@
               - '22'
               - '80'
               - '8080'
+              - '8888'
               - '443'
               - '10050'
               - '10051'
@@ -129,3 +130,28 @@
   vars:
     ansible_user: chudieagle
     ansible_ssh_private_key_file: /home/chudieagle/.ssh/id_chudieagle_rsa
+  tasks:
+    - name: "Install some dependencies"
+      apt:
+        name: libncurses5
+        state: present
+    
+    - name: Make sure we have a 'wheel' group
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: visudo -cf %s
+
+    - name: "Make sure user is enabled"
+      user:
+        name: "olu"
+        state: present
+        groups: wheel
+        append: yes
