@@ -1,0 +1,131 @@
+- name: Create bitnamisrv01 instances
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - gce_vars/auth
+    - gce_vars/machines
+    - gce_vars/zone
+  tasks:
+    - name: create a disk mapped for bitnamisrv01 - Centos8
+      gcp_compute_disk:
+        name: bitnamisrv01-disk-instance
+        size_gb: 120
+        type: pd-ssd
+        source_image: "{{ ubuntuimage }}"
+        zone: "{{ zone.za }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: disk
+
+    - name: create a VPC stockcheck network
+      gcp_compute_network:
+        name: stockchecker-subnetwork
+        auto_create_subnetworks: 'true'
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: network
+
+
+    - name: create a firewall rules for VPC
+      gcp_compute_firewall:
+        name: bitnami-fw-ports
+        network: "{{ network }}"
+        allowed:
+          - ip_protocol: icmp
+          - ip_protocol: tcp
+            ports:
+              - '22'
+              - '80'
+              - '8080'
+              - '443'
+              - '10050'
+              - '10051'
+        target_tags:
+          - bitnami
+        source_tags:
+          - bitnami
+          - shoplauncherdev
+          - management
+          - greeneagle
+          - redis
+          - elasticsearch
+        source_ranges:
+          - '0.0.0.0/0'
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: firewall
+
+    - name: create an IPv4 public IP Address
+      gcp_compute_address:
+        name: bitnamisrv01-instance
+        region: "{{ region }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: address
+
+    - name: create the bitnamisrv01 instance
+      gcp_compute_instance:
+        name: bitnamisrv01
+        machine_type: "{{ machine_type.bitnami }}"
+        deletion_protection: yes
+        disks:
+          - index: 0
+            auto_delete: 'no'
+            boot: 'true'
+            source: "{{ disk }}"
+        labels:
+          environment: shoplauncherdev
+        network_interfaces:
+          - network: "{{ network }}"
+            access_configs:
+              - name: External NAT
+                nat_ip: "{{ address }}"
+                type: ONE_TO_ONE_NAT
+        tags:
+          items:
+            - bitnami
+        metadata:
+          ssh_user: "{{ ssh_user }}"
+          ssh_key: "{{ ssh_key }}"
+        zone: "{{ zone.za }}"
+        project: "{{ gcp_project }}"
+        auth_kind: "{{ gcp_cred_kind }}"
+        service_account_file: "{{ gcp_cred_file }}"
+        state: present
+      register: instance
+
+    - name: Show bitnamisrv01 Instance Details
+      debug:
+        msg: "The bitnamisrv01 instance is accessible at {{ address.address }}"
+
+    - name: Add bitnamisrv01 to group bitnamisrv01
+      add_host:
+        name: "{{ address.address }}"
+        groups: bitnami
+
+  post_tasks:
+    - name: Wait for SSH for instance bitnamisrv01 in first zone
+      wait_for:
+        delay: 30
+        host: "{{ address.address }}"
+        port: 22
+        state: started
+        timeout: 120
+
+- hosts: bitnami
+  roles:
+    - users
+    - zabbix-agent
+  gather_facts: True
+  become: true
+  vars:
+    ansible_user: chudieagle
+    ansible_ssh_private_key_file: /home/chudieagle/.ssh/id_chudieagle_rsa
