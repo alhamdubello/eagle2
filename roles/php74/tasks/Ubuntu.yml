@@ -9,13 +9,13 @@
     state: present
   loop: "{{ ubuntu_php74_pkgs }}"
 
-- name: stopping apache 2 services
-  service:
-    name: apache2
-    state: stopped 
-    enabled: no
-
-- name: uninstalling apache2
-  apt:
-    name: apache2
-    state: absent
+  #- name: stopping apache 2 services
+  #  service:
+  #    name: apache2
+  #    state: stopped 
+  #    enabled: no
+  #
+  #- name: uninstalling apache2
+  #  apt:
+  #    name: apache2
+  #    state: absent

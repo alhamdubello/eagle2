@@ -12,5 +12,6 @@ machine_type:
   haproxy: n1-standard-1
   ubudemo: n2-standard-2
   bitnami: n2-standard-4
+  obsolutely: n2-standard-2
 image: https://www.googleapis.com/compute/v1/projects/centos-cloud/global/images/centos-8-v20210122
 ubuntuimage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2010-groovy-v20210224 
